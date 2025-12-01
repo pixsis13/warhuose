@@ -1,0 +1,89 @@
+{% extends 'inventory/base.html' %}
+
+{% block content %}
+<!-- هدر و دکمه افزودن -->
+<div class="md:flex md:items-center md:justify-between mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">لیست محصولات</h2>
+    <a href="{% url 'product_create' %}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        افزودن کالای جدید
+    </a>
+</div>
+
+<!-- نوار جستجو -->
+<div class="bg-white rounded-lg shadow-sm p-4 mb-6 border border-gray-200">
+    <form method="get" class="relative">
+        <div class="flex items-center">
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <input type="text" name="q" value="{{ query|default:'' }}"
+                   class="block w-full pr-10 pl-4 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
+                   placeholder="جستجو در نام یا توضیحات کالا...">
+            <button type="submit" class="mr-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium transition">
+                بگرد
+            </button>
+            {% if query %}
+            <a href="{% url 'product_list' %}" class="mr-2 text-sm text-gray-500 hover:text-red-500 underline">لغو فیلتر</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- جدول محصولات -->
+<div class="bg-white shadow overflow-hidden rounded-lg border border-gray-200">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">نام کالا</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">دسته‌بندی</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">موجودی</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">قیمت واحد</th>
+                    <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">عملیات</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for product in products %}
+                <tr class="hover:bg-gray-50 transition duration-150 {% if product.is_low_stock %}bg-red-50{% endif %}">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
+                        <div class="text-xs text-gray-500 truncate max-w-xs">{{ product.description|truncatechars:30 }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                            {{ product.category.name|default:"--" }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if product.is_low_stock %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 animate-pulse">
+                                {{ product.quantity }} (کم!)
+                            </span>
+                        {% else %}
+                            <span class="text-sm text-gray-900 font-bold">{{ product.quantity }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ product.price }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <a href="{% url 'product_update' product.pk %}" class="text-indigo-600 hover:text-indigo-900 ml-3 bg-indigo-50 px-2 py-1 rounded hover:bg-indigo-100 transition">ویرایش</a>
+                        <a href="{% url 'product_delete' product.pk %}" class="text-red-600 hover:text-red-900 bg-red-50 px-2 py-1 rounded hover:bg-red-100 transition">حذف</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                        <p>هیچ کالایی یافت نشد!</p>
+                        {% if query %}
+                        <p class="text-sm mt-2">سعی کنید عبارت دیگری را جستجو کنید.</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'inventory/base.html' %}
+
+{% block content %}
+<div class="flex justify-center items-center h-96">
+    <div class="bg-white rounded-lg shadow-xl border border-red-100 p-8 max-w-md w-full text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+            <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        </div>
+        
+        <h3 class="text-lg leading-6 font-medium text-gray-900">حذف کالا</h3>
+        <div class="mt-2 px-7 py-3">
+            <p class="text-sm text-gray-500">
+                آیا مطمئن هستید که می‌خواهید کالای <span class="font-bold text-gray-800">"{{ product.name }}"</span> را حذف کنید؟ این عملیات غیرقابل بازگشت است.
+            </p>
+        </div>
+        
+        <form method="post" class="mt-5 sm:mt-6 flex gap-3 justify-center">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm sm:w-auto">
+                بله، حذف کن
+            </button>
+            <a href="{% url 'product_list' %}" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm sm:w-auto">
+                خیر
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
