@@ -48,6 +48,7 @@ def dashboard(request):
     return render(request, 'inventory/dashboard.html', context)
 
 # 2. افزودن دسته‌بندی جدید
+@login_required
 def category_create(request):
     form = CategoryForm(request.POST or None)
     if form.is_valid():
@@ -56,6 +57,7 @@ def category_create(request):
     return render(request, 'inventory/category_form.html', {'form': form})
 
 # 3. گزارش‌گیری (CSV)
+@login_required
 def export_products_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="inventory_report.csv"'
@@ -72,6 +74,7 @@ def export_products_csv(request):
     return response
 
 # 3. ایجاد کالا
+@login_required
 def product_create(request):
     form = ProductForm(request.POST or None)
     if form.is_valid():
@@ -81,6 +84,7 @@ def product_create(request):
 
 
 # 4. ویرایش کالا (ویژگی جدید)
+@login_required
 def product_update(request, pk):
     product = get_object_or_404(Product, pk=pk)
     form = ProductForm(request.POST or None, instance=product)
@@ -91,6 +95,7 @@ def product_update(request, pk):
 
 
 # 5. حذف کالا
+@login_required
 def product_delete(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
@@ -98,7 +103,7 @@ def product_delete(request, pk):
         return redirect('product_list')
     return render(request, 'inventory/product_confirm_delete.html', {'product': product})
 
-
+@login_required
 def product_list(request):
     query = request.GET.get('q')
     products = Product.objects.all().order_by('-created_at')
