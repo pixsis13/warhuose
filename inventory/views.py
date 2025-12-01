@@ -1,14 +1,23 @@
-from django.shortcuts import get_object_or_404
-from django.db.models import Q  # برای جستجوی پیشرفته‌تر
-import csv
-import json
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.db.models import Sum, F, Count
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required # برای محافظت از صفحات
+from django.contrib.auth import login
+from django.db.models import Sum, F
 from .models import Product, Category
-from .forms import ProductForm, CategoryForm
+from .forms import ProductForm, CategoryForm, UserRegisterForm
 
-# 1. داشبورد با داده‌های نمودار
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user) # لاگین خودکار بعد از ثبت نام
+            return redirect('dashboard')
+    else:
+        form = UserRegisterForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+# محافظت از تمام ویوهای اصلی با @login_required
+@login_required
 def dashboard(request):
     total_products = Product.objects.count()
     total_quantity = Product.objects.aggregate(Sum('quantity'))['quantity__sum'] or 0
